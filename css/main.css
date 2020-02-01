@@ -1,0 +1,250 @@
+* {
+  margin: 0;
+  padding: 0;
+
+  color: rgb(230, 230, 230);
+  text-decoration: none;
+}
+
+html,
+body {
+  height: 100%;
+
+  position: relative;
+}
+
+body {
+  font-family: sans-serif;
+  overflow: hidden;
+  background-color: gray;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  text-align: center;
+}
+
+body::before {
+  height: 100%;
+  width: 100%;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  content: "";
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.google-search-form {
+  width: 100%;
+
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.google-search-form input {
+  width: 100%;
+
+  padding: 10px 0;
+
+  background: rgba(0, 0, 0, 0);
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.google-search-form input::placeholder {
+  color: white;
+  opacity: 0.25;
+}
+
+.google-search-form input:hover {
+  cursor: pointer;
+}
+
+.google-search-form input:focus {
+  background: linear-gradient(90deg, #00000000 20%, 40%, #ffffff1a, 60%, #00000000 80%);
+  caret-color: rgba(255, 255, 255, 0.25);
+  cursor: text;
+  outline: none;
+}
+
+.google-search-form input:focus::placeholder {
+  opacity: 0;
+}
+
+/* MAIN CONTENT */
+
+.main {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.main:hover {
+  cursor: default;
+}
+
+.main p {
+  margin-top: 5%;
+  display: block;
+  font-size: 0.9rem;
+  position: relative;
+  white-space: normal;
+}
+
+.main p:last-child {
+  font-size: 0.7rem;
+  text-align: right;
+}
+
+/* CLOCK */
+
+.clock,
+.seconds,
+.day,
+.date {
+  display: inline-block;
+  position: relative;
+
+  user-select: none;
+}
+
+.clock,
+.day {
+  font-size: 2rem;
+}
+
+.date {
+  display: block;
+  font-size: 4rem;
+  white-space: normal;
+}
+
+/* LINCS */
+
+.links {
+  max-height: 80%;
+  max-width: 80%;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 30px;
+  display: none;
+  overflow: hidden;
+  transition: dispay 0.5s;
+}
+
+.links-visible {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.netflix {
+  background-image: url(http://icons.iconarchive.com/icons/papirus-team/papirus-apps/128/netflix-icon.png);
+  -webkit-background-size: 64px 64px;
+  background-size: 64px 64px;
+  display: inline-block;
+  vertical-align: top;
+  height: 64px;
+  width: 64px;
+}
+
+/* GOOGLE STYLES */
+
+.gb_f {
+  color: rgba(0, 0, 0, 0.87);
+  display: inline-block;
+  font-size: 13px;
+  margin: 8px 2px;
+  text-align: center;
+  outline: none;
+}
+
+.gb_w {
+  float: left;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 5px solid #4273db;
+}
+
+.gb_w,
+.gb_x {
+  position: relative;
+  top: 27px;
+  visibility: hidden;
+}
+
+.gb_x {
+  float: right;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid #4273db;
+}
+
+.gb_y {
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #4273db;
+}
+
+.gb_y,
+.gb_z {
+  left: 37px;
+  visibility: hidden;
+}
+
+.gb_z {
+  position: absolute;
+  top: 59px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #4273db;
+}
+
+.gb_f .gb_r {
+  background-image: url(https://ssl.gstatic.com/gb/images/p1_6234ef59.png);
+  -webkit-background-size: 64px 2686px;
+  background-size: 64px 2686px;
+}
+.gb_f .gb_r,
+.gb_f .gb_d {
+  display: inline-block;
+  vertical-align: top;
+  height: 64px;
+  width: 64px;
+}
+
+.gb_t {
+  display: block;
+  line-height: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 84px;
+  text-overflow: ellipsis;
+  color: rgba(0, 0, 0, 0.87);
+}
