@@ -1,6 +1,6 @@
-//*****************************************************************************
-//  DATE & CLOCK FUNCTIONALITY                                                  *****
-//***************************************************************************
+////////////////////////////////////////////////////////////////////////////////
+//  DATE & CLOCK FUNCTIONALITY                                              ///
+//////////////////////////////////////////////////////////////////////////////
 {
     let d = new Date(Date.now());
     // document.querySelector(".date").innerHTML = d.toLocaleDateString("en-US", {
@@ -34,9 +34,9 @@ const clock = function () {
 clock();
 window.setInterval(clock, 1000);
 
-//*****************************************************************************
-//  INSPIRING TEXT                                                       *****
-//***************************************************************************
+////////////////////////////////////////////////////////////////////////////////
+//  INSPIRING TEXT                                                          ///
+//////////////////////////////////////////////////////////////////////////////
 
 var mzGetQuery = {
     url: "",
@@ -53,8 +53,7 @@ var mzGetQuery = {
     }
 }
 
-chrome.storage.sync.get(["dailyText"], (res) => {
-
+async function getDailyText() {
     const updateOutput = () => {
         const mainps = document.querySelectorAll(".main p");
         mainps[0].innerHTML = `<em>\"${dailyText.quote}\"</em>`;
@@ -69,64 +68,85 @@ chrome.storage.sync.get(["dailyText"], (res) => {
         update: 0
     };
 
+    const res = await new Promise((resolve) => {
+        chrome.storage.sync.get(["dailyText"], (res) => {
+            resolve(res);
+        });
+    });
+
     if (res.dailyText != undefined) {
         dailyText.author = res.dailyText.author;
         dailyText.quote = res.dailyText.quote;
         dailyText.background = res.dailyText.background;
-
-        updateOutput();
     }
 
     const day = Math.floor(Date.now() / 86400000);
     if (res.dailyText == undefined || day != res.dailyText.update) {
-        const insQ = new XMLHttpRequest();
-        const insB = new XMLHttpRequest();
-        const urlQ = 'https://quotes.rest/qod.json/?category=inspire';
-        mzGetQuery.url = "https://pixabay.com/api/";
-        mzGetQuery.options = {
-            key: "14746046-e5f0ddb31593262274d6028d3",
-            per_page: 200,
-            category: "nature",
-            orientation: "horizontal",
-            q: "landscape"
-        }
-        const urlB = mzGetQuery.getQuery();
-        insQ.open("GET", urlQ);
-        insQ.send();
-        insB.open("GET", urlB);
-        insB.send();
 
-        insQ.onreadystatechange = (e) => {
-            const response = JSON.parse(insQ.responseText);
-            dailyText.author = response.contents.quotes[0].author;
-            dailyText.quote = response.contents.quotes[0].quote;
-            chrome.storage.sync.set({
-                "dailyText": dailyText
-            });
-            updateOutput();
-        };
+        // GET inpireting text
+        const quote = await new Promise((resolve) => {
+            const ins = new XMLHttpRequest();
+            const url = 'https://quotes.rest/qod.json/?category=inspire';
+            ins.open("GET", url);
 
-        insB.onreadystatechange = (e) => {
-            const response = JSON.parse(insB.responseText);
-            const back = Math.floor(Math.random() * response.hits.length);
-            dailyText.background = response.hits[back].largeImageURL;
-            dailyText.update = day;
-            chrome.storage.sync.set({
-                "dailyText": dailyText
-            });
-            updateOutput();
-        };
+            ins.onreadystatechange = () => {
+                if (ins.readyState === 4 && ins.status === 200)
+                    resolve(JSON.parse(ins.responseText));
+            };
+
+            ins.send();
+        });
+
+        // GET inspireing image
+        const image = await new Promise((resolve) => {
+            const ins = new XMLHttpRequest();
+            mzGetQuery.url = "https://pixabay.com/api/";
+            mzGetQuery.options = {
+                key: "14746046-e5f0ddb31593262274d6028d3",
+                per_page: 200,
+                category: "nature",
+                orientation: "horizontal",
+                q: "landscape"
+            }
+            const url = mzGetQuery.getQuery();
+            ins.open("GET", url);
+
+            ins.onreadystatechange = (e) => {
+                if (ins.readyState === 4 && ins.status === 200)
+                    resolve(JSON.parse(ins.responseText));
+            };
+
+            ins.send();
+        });
+
+        // Save quote results
+        dailyText.author = quote.contents.quotes[0].author;
+        dailyText.quote = quote.contents.quotes[0].quote;
+
+        // Save image results
+        const back = Math.floor(Math.random() * image.hits.length);
+        dailyText.background = image.hits[back].largeImageURL;
+        dailyText.update = day;
+
+        // Save all results to storage
+        chrome.storage.sync.set({
+            "dailyText": dailyText
+        });
     }
-});
 
-//*****************************************************************************
-//  LINKS                                                                *****
-//***************************************************************************
+    updateOutput();
+}
 
-document.querySelector("body").addEventListener("click", flipLinks);
+getDailyText();
 
-const links = document.querySelector(".links");
+////////////////////////////////////////////////////////////////////////////////
+//  LINKS                                                                   ///
+//////////////////////////////////////////////////////////////////////////////
+
+document.addEventListener("click", flipLinks);
+
 function flipLinks() {
+    const links = document.querySelector(".links");
     if (document.activeElement === document.querySelector(".google-search-form input")) {
         return;
     }

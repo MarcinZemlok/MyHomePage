@@ -1,4 +1,4 @@
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
 
@@ -164,9 +164,17 @@ body::before {
   width: 64px;
 }
 
+.link, .link-text {
+  color: black;
+}
+
+.link {
+  margin: 3px;
+}
+
 /* GOOGLE STYLES */
 
-.gb_f {
+/* .gb_f {
   color: rgba(0, 0, 0, 0.87);
   display: inline-block;
   font-size: 13px;
@@ -247,4 +255,4 @@ body::before {
   width: 84px;
   text-overflow: ellipsis;
   color: rgba(0, 0, 0, 0.87);
-}
+} */
