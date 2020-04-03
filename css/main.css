@@ -1,3 +1,20 @@
+/*//////////////////////////////////////////////////////////////////////////////
+///                                MyHomePage                                ///
+//============================================================================//
+//        Author: Marcin Żemlok
+//         Email: marcinzemlok@gmail.com
+//       Version: 0.3
+//
+//   Description: MyHomePage functionality.
+//
+// Creation date: 20/02/2020
+================================= CHANGE LOG ===================================
+// [20/02/2020]        Marcin Żemlok
+        Initial work.                                                        ///
+// [03/04/2020]        Marcin Żemlok
+        * Added force reload button.
+        * Added circular link box.                                           ///
+//////////////////////////////////////////////////////////////////////////////*/
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -35,6 +52,8 @@ body::before {
   content: "";
   background-color: rgba(0, 0, 0, 0.7);
 }
+
+/* MAIN */
 
 .google-search-form {
   width: 100%;
@@ -75,6 +94,26 @@ body::before {
 
 .google-search-form input:focus::placeholder {
   opacity: 0;
+}
+
+/* CONTROLL */
+.controll {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  font-size: 2rem;
+}
+
+.controll button {
+  width: 28px;
+  display: block;
+
+  background-color: #00000000;
+  border: none;
+
+  cursor: pointer;
+  font-size: 1.5rem;
 }
 
 /* MAIN CONTENT */
@@ -130,46 +169,36 @@ body::before {
 /* LINCS */
 
 .links {
-  max-height: 80%;
-  max-width: 80%;
-
   position: absolute;
-  top: 50%;
-  left: 50%;
   transform: translate(-50%, -50%);
 
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 30px;
+  background-color: hsla(0, 0%, 100%, 0.2);
+  border-radius: 50%;
   display: none;
   overflow: hidden;
   transition: dispay 0.5s;
 }
 
 .links-visible {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  padding: 20px;
+  display: block;
+  /* padding: 20px; */
 }
 
-.netflix {
-  background-image: url(http://icons.iconarchive.com/icons/papirus-team/papirus-apps/128/netflix-icon.png);
-  -webkit-background-size: 64px 64px;
-  background-size: 64px 64px;
-  display: inline-block;
-  vertical-align: top;
-  height: 64px;
-  width: 64px;
+.link {
+  height: 60px;
+  width: 60px;
+  position: absolute;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  transform: translate(-50%, -50%);
 }
 
 .link, .link-text {
   color: black;
-}
-
-.link {
-  margin: 3px;
 }
 
 /* GOOGLE STYLES */
