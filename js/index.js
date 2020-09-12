@@ -147,6 +147,11 @@ async function getDailyText(event=null, force=true) {
         dailyText.background = image.hits[back].largeImageURL;
         dailyText.update = day;
 
+        console.log("============================================================")
+        console.log(image)
+        console.log(back)
+        console.log("============================================================")
+
         // Save all results to storage
         chrome.storage.sync.set({
             "dailyText": dailyText
