@@ -53,49 +53,6 @@ body::before {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* MAIN */
-
-.google-search-form {
-  width: 100%;
-
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translate(-50%);
-}
-
-.google-search-form input {
-  width: 100%;
-
-  padding: 10px 0;
-
-  background: rgba(0, 0, 0, 0);
-  border: none;
-  border-radius: 0.75rem;
-  font-size: 1.5rem;
-  text-align: center;
-}
-
-.google-search-form input::placeholder {
-  color: white;
-  opacity: 0.25;
-}
-
-.google-search-form input:hover {
-  cursor: pointer;
-}
-
-.google-search-form input:focus {
-  background: linear-gradient(90deg, #00000000 20%, 40%, #ffffff1a, 60%, #00000000 80%);
-  caret-color: rgba(255, 255, 255, 0.25);
-  cursor: text;
-  outline: none;
-}
-
-.google-search-form input:focus::placeholder {
-  opacity: 0;
-}
-
 /* CONTROLL */
 .controll {
   position: absolute;
@@ -103,6 +60,7 @@ body::before {
   right: 0;
 
   font-size: 2rem;
+  z-index: 1;
 }
 
 .controll button {
@@ -124,6 +82,7 @@ body::before {
   left: 50%;
   transform: translate(-50%, -50%);
   white-space: nowrap;
+  z-index: 1;
 }
 
 .main:hover {
@@ -166,39 +125,54 @@ body::before {
   white-space: normal;
 }
 
-/* LINCS */
+/* LINKS */
 
 .links {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+
+  cursor: pointer;
+}
+
+.hexagon {
   position: absolute;
   transform: translate(-50%, -50%);
 
-  background-color: hsla(0, 0%, 100%, 0.2);
-  border-radius: 50%;
-  display: none;
-  overflow: hidden;
-  transition: dispay 0.5s;
-}
-
-.links-visible {
-  display: block;
-  /* padding: 20px; */
-}
-
-.link {
-  height: 60px;
-  width: 60px;
-  position: absolute;
+  width: 100px;
+  height: 57px;
+  background-color: rgba(255, 255, 255, .25);
 
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-
-  transform: translate(-50%, -50%);
 }
 
-.link, .link-text {
+.hexagon:before,
+.hexagon:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+}
+
+.hexagon:before {
+  bottom: 100%;
+  border-bottom: 28px solid rgba(255, 255, 255, .25);
+}
+
+.hexagon:after {
+  top: 100%;
+  border-top: 28px solid rgba(255, 255, 255, .25);
+}
+
+.hexagon, .link-text {
   color: black;
+  text-shadow: -1px -1px 0 rgba(255, 255, 255, .5), 1px -1px 0 rgba(255, 255, 255, .5), -1px 1px 0 rgba(255, 255, 255, .5), 1px 1px 0 rgba(255, 255, 255, .5);
+  font-size: medium;
+  font-weight: bold;
 }
 
 /* GOOGLE STYLES */

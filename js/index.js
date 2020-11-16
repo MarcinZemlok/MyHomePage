@@ -1,51 +1,26 @@
-/*//////////////////////////////////////////////////////////////////////////////
-///                                MyHomePage                                ///
-//============================================================================//
-//        Author: Marcin Żemlok
-//         Email: marcinzemlok@gmail.com
-//       Version: 0.2
-//
-//   Description: MyHomePage functionality.
-//
-// Creation date: 20/02/2020
-================================= CHANGE LOG ===================================
-// [20/02/2020]        Marcin Żemlok
-        Added links wheel functionality draft.                               ///
-// [03/04/2020]        Marcin Żemlok
-        * Added force reload button.
-        * Added circular link box.                                           ///
-//////////////////////////////////////////////////////////////////////////////*/
 ////////////////////////////////////////////////////////////////////////////////
 //  DATE & CLOCK FUNCTIONALITY                                              ///
 //////////////////////////////////////////////////////////////////////////////
 {
     let d = new Date(Date.now());
-    // document.querySelector(".date").innerHTML = d.toLocaleDateString("en-US", {
-    //     weekday: "long",
-    //     day: "numeric",
-    //     month: "numeric",
-    //     year: "numeric",
-    // });
     let weekday = d.toLocaleString("en-US", { weekday: "long" });
-    let day = d.toLocaleString("en-US", { day: "numeric" });
-    let month = d.toLocaleString("en-US", { month: "2-digit" });
-    let year = d.toLocaleString("en-US", { year: "numeric" });
+    let day = d.getDate();
+    let month = d.getMonth()+1;
+    let year = d.getFullYear();
     document.querySelector(".day").innerHTML = `${weekday}`;
     document.querySelector(".date").innerHTML = `${day}/${month}/${year}`;
 }
+
 const ham = document.querySelector(".clock");
 const sec = document.querySelector(".seconds");
 const clock = function () {
     const time = new Date();
-    let s = time.getSeconds();
-    let h = time.getHours();
-    let m = time.getMinutes();
-    if (s < 10) s = "0" + s;
-    if (h < 10) h = "0" + h;
-    if (m < 10) m = "0" + m;
+    let s = ('0'+time.getSeconds()).substr(-2, 2);
+    let h = ('0'+time.getHours()).substr(-2, 2);
+    let m = ('0'+time.getMinutes()).substr(-2, 2);
     sec.innerHTML = s;
     if (s == 0 || ham.innerHTML == "--:--") {
-        ham.innerHTML = "" + h + ":" + m;
+        ham.innerHTML = h + ":" + m;
     }
 }
 clock();
@@ -72,35 +47,35 @@ var mzGetQuery = {
     }
 }
 
-async function getDailyText(event=null, force=true) {
-    const updateOutput = () => {
+async function getdailyContent(event=null, force=true) {
+    updateOutput = () => {
         const mainps = document.querySelectorAll(".main p");
-        mainps[0].innerHTML = `<em>\"${dailyText.quote}\"</em>`;
-        mainps[1].innerHTML = dailyText.author;
-        document.querySelector("body").style.backgroundImage = `url(${dailyText.background})`;
+        mainps[0].innerHTML = `<em>\"${dailyContent.quote}\"</em>`;
+        mainps[1].innerHTML = dailyContent.author;
+        document.querySelector("body").style.backgroundImage = `url(${dailyContent.background})`;
     };
 
-    let dailyText = {
+    let dailyContent = {
         author: "",
         quote: "",
         background: "",
         update: 0
     };
 
-    const res = await new Promise((resolve) => {
-        chrome.storage.sync.get(["dailyText"], (res) => {
+    const storage = await new Promise((resolve) => {
+        chrome.storage.sync.get(["dailyContent"], (res) => {
             resolve(res);
         });
     });
 
-    if (res.dailyText != undefined || force) {
-        dailyText.author = res.dailyText.author;
-        dailyText.quote = res.dailyText.quote;
-        dailyText.background = res.dailyText.background;
+    if (storage.dailyContent != undefined || force) {
+        dailyContent.author = storage.dailyContent.author;
+        dailyContent.quote = storage.dailyContent.quote;
+        dailyContent.background = storage.dailyContent.background;
     }
 
     const day = Math.floor(Date.now() / 86400000);
-    if (res.dailyText == undefined || day != res.dailyText.update || force) {
+    if (storage.dailyContent == undefined || day != storage.dailyContent.update || force) {
 
         // GET inpireting text
         const quote = await new Promise((resolve) => {
@@ -139,94 +114,127 @@ async function getDailyText(event=null, force=true) {
         });
 
         // Save quote results
-        dailyText.author = quote.contents.quotes[0].author;
-        dailyText.quote = quote.contents.quotes[0].quote;
+        dailyContent.author = quote.contents.quotes[0].author;
+        dailyContent.quote = quote.contents.quotes[0].quote;
 
         // Save image results
         const back = Math.floor(Math.random() * image.hits.length);
-        dailyText.background = image.hits[back].largeImageURL;
-        dailyText.update = day;
+        dailyContent.background = image.hits[back].largeImageURL;
+        dailyContent.update = day;
 
-        console.log("============================================================")
-        console.log(image)
-        console.log(back)
-        console.log("============================================================")
+        // console.log("============================================================")
+        // console.log(image)
+        // console.log(back)
+        // console.log("============================================================")
 
         // Save all results to storage
         chrome.storage.sync.set({
-            "dailyText": dailyText
+            "dailyContent": dailyContent
         });
     }
 
     updateOutput();
 }
 
-getDailyText(null, false);
+getdailyContent(null, false);
 
-reloadButton.addEventListener('click', getDailyText);
+reloadButton.addEventListener('click', getdailyContent);
 
 ////////////////////////////////////////////////////////////////////////////////
 //  LINKS                                                                   ///
 //////////////////////////////////////////////////////////////////////////////
 class Links {
-    constructor() {
-        this.links = document.querySelector(".links");
+    constructor(x, y, w, count, offset = 0, angle = 0) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.r = this.w + offset;
+        this.children = [];
+        this.childrenHTML = [];
 
-        this.items = this.links.querySelectorAll(".link");
-
-        this.shape = 5 * (60 * 2**(1/2));
-
-        this.links.style.height = `${this.shape}px`
-        this.links.style.width = `${this.shape}px`
-
-        this.spaceoutItems();
-
-        document.addEventListener("click", (event) => {
-            this.flip(event);
-        });
-    }
-
-    spaceoutItems() {
-        const offset = this.shape / 2;
-        let radius = (60 * 2**(1/2));
-        let position = { x: 0, y: -radius };
-        let angleInc = 2 * Math.PI / 8;
-        let angle = 0;
-
-        this.items.forEach((e, i) => {
-            e.style.top = `${position.y + offset}px`;
-            e.style.left = `${position.x + offset}px`;
-
-            const _x = position.x * Math.cos(angleInc) - position.y * Math.sin(angleInc);
-            const _y = position.x * Math.sin(angleInc) + position.y * Math.cos(angleInc);
-
-            position.x = Math.round(_x);
-            position.y = Math.round(_y);
-
-            angle += angleInc;
-
-            if (angle >= Math.PI * 2) {
-                angle = 0;
-                radius = (60 * 2**(1/2)) * 2;
-                position = { x: 0, y: -radius };
-                angleInc = 2 * Math.PI / 17;
+        var PI2 = Math.PI * 2;
+        for (var i = 1; this.children.length < count-1; i++) {
+            for (var j = 0; this.children.length < count-1 && j<6; j++) {
+                var currentX = this.x+Math.cos(j*PI2/6-angle)*this.r*i;
+                var currentY = this.y+Math.sin(j*PI2/6-angle)*this.r*i;
+                this.children.push({x: currentX, y: currentY});
+                for (var k = 1; this.children.length < count-1 && k<i; k++) {
+                    var newX = currentX + Math.cos(j*PI2/6+PI2/3-angle)*this.r*k;
+                    var newY = currentY +  Math.sin(j*PI2/6+PI2/3-angle)*this.r*k;
+                    this.children.push({x: newX, y: newY});
+                }
             }
-        });
-    }
-
-    flip(event) {
-
-        if (document.activeElement === document.querySelector(".google-search-form input") ||
-            document.activeElement === document.querySelector(".controll button")) {
-            this.links.classList.remove("links-visible");
-            return;
         }
 
-        this.links.style.top = `${event.clientY}px`;
-        this.links.style.left = `${event.clientX}px`;
+        let he0 = document.createElement("div");
+        he0.classList.add("hexagon");
+        he0.style.top = this.y + "px";
+        he0.style.left = this.x + "px";
 
-        this.links.classList.toggle("links-visible");
+        this.childrenHTML.push(he0);
+
+        this.children.forEach(c => {
+            let he = document.createElement("div");
+            he.classList.add("hexagon");
+            he.style.top = c.y + "px";
+            he.style.left = c.x + "px";
+
+            this.childrenHTML.push(he);
+        });
     }
 }
 
-const links = new Links();
+const body = document.querySelector('body');
+const links = document.querySelector('.links');
+links.addEventListener('click', e => {
+    const hexes = document.querySelectorAll('.hexagon');
+
+    if (hexes.length > 0) {
+        hexes.forEach(h => {
+            body.removeChild(h);
+        });
+    } else {
+        const linksHTML = [
+            `<a href="https://netflix.com">
+            <img src="https://netflix.com/favicon.ico" alt="add link" height="32px">
+            <p class="link-text">Netflix</p>
+            </a>`,
+            `<a href="https://mail.google.com/mail/?tab=mm&amp;authuser=0">
+            <img src="https://mail.google.com/favicon.ico" alt="add link" width="32px">
+            <p class="link-text">Gmail</p>
+            </a>`,
+            `<a href="https://maps.google.pl/maps?hl=pl&amp;tab=ml&amp;authuser=0">
+            <img src="https://maps.google.pl/favicon.ico" alt="add link" width="32px">
+            <p class="link-text">Mapy</p>
+            </a>`,
+            `<a href="https://www.youtube.com/?hl=pl&gl=PL">
+            <img src="https://www.youtube.com/s/desktop/58aaddbe/img/favicon_32.png" alt="add link" width="32px">
+            <p class="link-text">YouTube</p>
+            </a>`,
+            `<a href="https://www.facebook.com/?ref=logo">
+            <img src="https://www.facebook.com/favicon.ico" alt="add link" width="32px">
+            <p class="link-text">YouTube</p>
+            </a>`,
+            `<a href="#">
+            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fc%2Fce%2FPlus_font_awesome.svg%2F1024px-Plus_font_awesome.svg.png&f=1&nofb=1"
+                alt="add link" width="32px">
+            </a>`
+        ];
+
+        const links = new Links(
+            e.clientX,
+            e.clientY,
+            100,
+            linksHTML.length+1,
+            3,
+            Math.PI/3
+        );
+
+        links.childrenHTML.forEach((l, i) => {
+            if (i > 0) {
+                l.innerHTML = linksHTML[i-1];
+            }
+            body.appendChild(l);
+        });
+    }
+});
