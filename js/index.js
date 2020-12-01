@@ -4,8 +4,8 @@
 {
     let d = new Date(Date.now());
     let weekday = d.toLocaleString("en-US", { weekday: "long" });
-    let day = d.getDate();
-    let month = d.getMonth()+1;
+    let day = ('0'+d.getDate()).substr(-2, 2);
+    let month = ('0'+(d.getMonth()+1)).substr(-2, 2);
     let year = d.getFullYear();
     document.querySelector(".day").innerHTML = `${weekday}`;
     document.querySelector(".date").innerHTML = `${day}/${month}/${year}`;
