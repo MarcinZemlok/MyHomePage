@@ -30,9 +30,20 @@
 
     <body>
         <div class="controll">
-            <button><i class="fas fa-sync-alt"></i></button>
-            <p>Reload background</p>
+            <div>
+                <button id="reload-background-button">
+                    <i class="fas fa-sync-alt"></i>
+                    <p>Reload background</p>
+                </button>
+            </div>
+            <div>
+                <button id="settings-button">
+                    <i class="fas fa-cog"></i>
+                    <p>Settings</p>
+                </button>
+            </div>
         </div>
+        <div class="links"></div>
         <div class="main">
             <div class="day"></div>
             <div class="date"></div>
@@ -41,7 +52,136 @@
             <p>Inspireing line for today :)</p>
             <p>Author</p>
         </div>
-        <div class="links"></div>
+        <div id="settings">
+            <form id="settings-form">
+                <h1>Pixabay</h1>
+                <div>
+                    <label for="pixabay-key">User key</label>
+                    <input type="text" name="pixabay-key" id="pixabay-key">
+                </div>
+                <div>
+                    <label for="pixabay-q">Search quote</label>
+                    <input type="text" name="pixabay-q" id="pixabay-q" maxlength="10">
+                </div>
+                <div>
+                    <label for="pixabay-lang">Search language</label>
+                    <select name="pixabay-lang" id="pixabay-lang">
+                        <option value="cs">cs</option>
+                        <option value="da">da</option>
+                        <option value="de">de</option>
+                        <option value="en" selected>en</option>
+                        <option value="es">es</option>
+                        <option value="fr">fr</option>
+                        <option value="id">id</option>
+                        <option value="it">it</option>
+                        <option value="hu">hu</option>
+                        <option value="nl">nl</option>
+                        <option value="no">no</option>
+                        <option value="pl">pl</option>
+                        <option value="pt">pt</option>
+                        <option value="ro">ro</option>
+                        <option value="sk">sk</option>
+                        <option value="fi">fi</option>
+                        <option value="sv">sv</option>
+                        <option value="tr">tr</option>
+                        <option value="vi">vi</option>
+                        <option value="th">th</option>
+                        <option value="bg">bg</option>
+                        <option value="ru">ru</option>
+                        <option value="el">el</option>
+                        <option value="ja">ja</option>
+                        <option value="ko">ko</option>
+                        <option value="zh">zh</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pixabay-image_type">Type of image</label>
+                    <select name="pixabay-image_type" id="pixabay-image_type">
+                        <option value="photo">photo</option>
+                        <option value="illustration">illustration</option>
+                        <option value="vector">vector</option>
+                        <option value="all" selected>all</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pixabay-orientation">Image orientation</label>
+                    <select name="pixabay-orientation" id="pixabay-orientation">
+                        <option value="horizontal">horizontal</option>
+                        <option value="vertical">vertical</option>
+                        <option value="all" selected>all</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pixabay-category">Image category</label>
+                    <select name="pixabay-category" id="pixabay-category">
+                        <option value="backgrounds">backgrounds</option>
+                        <option value="fashion">fashion</option>
+                        <option value="nature">nature</option>
+                        <option value="science">science</option>
+                        <option value="education">education</option>
+                        <option value="feelings">feelings</option>
+                        <option value="health">health</option>
+                        <option value="people">people</option>
+                        <option value="religion">religion</option>
+                        <option value="places">places</option>
+                        <option value="animals">animals</option>
+                        <option value="industry">industry</option>
+                        <option value="computer">computer</option>
+                        <option value="food">food</option>
+                        <option value="sports">sports</option>
+                        <option value="transportation">transportation</option>
+                        <option value="travel">travel</option>
+                        <option value="buildings">buildings</option>
+                        <option value="business">business</option>
+                        <option value="music">music</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pixabay-colors">Image colors</label>
+                    <select name="pixabay-colors" id="pixabay-colors">
+                        <option value="grayscale">grayscale</option>
+                        <option value="transparent">transparent</option>
+                        <option value="red">red</option>
+                        <option value="orange">orange</option>
+                        <option value="yellow">yellow</option>
+                        <option value="green">green</option>
+                        <option value="turquoise">turquoise</option>
+                        <option value="blue">blue</option>
+                        <option value="lilac">lilac</option>
+                        <option value="pink">pink</option>
+                        <option value="white">white</option>
+                        <option value="gray">gray</option>
+                        <option value="black">black</option>
+                        <option value="brown">brown</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pixabay-safesearch">Safesearch</label>
+                    <input type="checkbox" name="pixabay-safesearch" id="pixabay-safesearch">
+                </div>
+
+                <h1>quotes.rest</h1>
+                <div>
+                    <label for="quotes-language">Quote language</label>
+                    <select name="quotes-language" id="quotes-language">
+                        <option value="en" selected>en</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="quotes-category">Quote category</label>
+                    <select name="quotes-category" id="quotes-category">
+                        <option value="inspire">inspire</option>
+                        <option value="management">management</option>
+                        <option value="sports">sports</option>
+                        <option value="life">life</option>
+                        <option value="funny">funny</option>
+                        <option value="love">love</option>
+                        <option value="art">art</option>
+                        <option value="students">students</option>
+                    </select>
+                </div>
+            </form>
+        </div>
         <script src="../js/index.js"></script>
     </body>
 

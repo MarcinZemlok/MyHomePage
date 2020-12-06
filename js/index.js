@@ -27,15 +27,21 @@ clock();
 window.setInterval(clock, 1000);
 
 ////////////////////////////////////////////////////////////////////////////////
-//  INSPIRING TEXT                                                          ///
+//  BACKGROUND & CONTENT                                                    ///
 //////////////////////////////////////////////////////////////////////////////
 
-const reloadButton = document.querySelector(".controll button");
+const reloadButton = document.querySelector(".controll button#reload-background-button");
+const settingsButton = document.querySelector(".controll button#settings-button");
 
-var mzGetQuery = {
-    url: "",
-    options: {},
-    getQuery: function () {
+var userData = null;
+
+class mzGetQuery {
+    constructor(url, options) {
+        this.url = url;
+        this.options = options;
+    }
+
+    getQuery = () => {
         let ret = this.url + "?";
 
         Object.entries(this.options).forEach((e, i) => {
@@ -47,98 +53,116 @@ var mzGetQuery = {
     }
 }
 
-async function getdailyContent(event=null, force=true) {
-    updateOutput = () => {
-        const mainps = document.querySelectorAll(".main p");
-        mainps[0].innerHTML = `<em>\"${dailyContent.quote}\"</em>`;
-        mainps[1].innerHTML = dailyContent.author;
-        document.querySelector("body").style.backgroundImage = `url(${dailyContent.background})`;
-    };
-
-    let dailyContent = {
-        author: "",
-        quote: "",
-        background: "",
-        update: 0
-    };
-
-    const storage = await new Promise((resolve) => {
-        chrome.storage.sync.get(["dailyContent"], (res) => {
+async function fetchChromeStorage() {
+    const ret = await new Promise((resolve) => {
+        chrome.storage.sync.get(["myHomePageUserData"], (res) => {
             resolve(res);
         });
     });
 
-    if (storage.dailyContent != undefined || force) {
-        dailyContent.author = storage.dailyContent.author;
-        dailyContent.quote = storage.dailyContent.quote;
-        dailyContent.background = storage.dailyContent.background;
-    }
+    console.table(ret.myHomePageUserData);
 
-    const day = Math.floor(Date.now() / 86400000);
-    if (storage.dailyContent == undefined || day != storage.dailyContent.update || force) {
+    return ret.myHomePageUserData;
+}
 
-        // GET inpireting text
-        const quote = await new Promise((resolve) => {
-            const ins = new XMLHttpRequest();
-            const url = 'https://quotes.rest/qod.json/?category=inspire';
-            ins.open("GET", url);
+async function saveUserData() {
+    chrome.storage.sync.set({
+        myHomePageUserData: userData
+    });
+    console.log(`User data saved successfully.`)
+}
 
-            ins.onreadystatechange = () => {
-                if (ins.readyState === 4 && ins.status === 200)
-                    resolve(JSON.parse(ins.responseText));
-            };
-
-            ins.send();
-        });
-
-        // GET inspireing image
-        const image = await new Promise((resolve) => {
-            const ins = new XMLHttpRequest();
-            mzGetQuery.url = "https://pixabay.com/api/";
-            mzGetQuery.options = {
+async function getBackground() {
+    const ret = await new Promise((resolve) => {
+        const query = new mzGetQuery(
+            "https://pixabay.com/api/",
+            {
                 key: "14746046-e5f0ddb31593262274d6028d3",
                 per_page: 200,
                 category: "nature",
                 orientation: "horizontal",
                 q: "landscape"
             }
-            const url = mzGetQuery.getQuery();
-            ins.open("GET", url);
+        );
+        const ins = new XMLHttpRequest();
+        ins.open("GET", query.getQuery());
 
-            ins.onreadystatechange = (e) => {
-                if (ins.readyState === 4 && ins.status === 200)
-                    resolve(JSON.parse(ins.responseText));
-            };
+        ins.onreadystatechange = (e) => {
+            if (ins.readyState === 4 && ins.status === 200)
+                resolve(JSON.parse(ins.responseText));
+        };
 
-            ins.send();
-        });
+        ins.send();
+    });
 
-        // Save quote results
-        dailyContent.author = quote.contents.quotes[0].author;
-        dailyContent.quote = quote.contents.quotes[0].quote;
+    console.log(ret);
 
-        // Save image results
-        const back = Math.floor(Math.random() * image.hits.length);
-        dailyContent.background = image.hits[back].largeImageURL;
-        dailyContent.update = day;
-
-        // console.log("============================================================")
-        // console.log(image)
-        // console.log(back)
-        // console.log("============================================================")
-
-        // Save all results to storage
-        chrome.storage.sync.set({
-            "dailyContent": dailyContent
-        });
-    }
-
-    updateOutput();
+    return ret;
 }
 
-getdailyContent(null, false);
+async function getQuotation() {
+    const ret = await new Promise((resolve) => {
+        const query = new mzGetQuery(
+            'https://quotes.rest/qod.json/',
+            {
+                category: 'inspire'
+            }
+        );
+        const ins = new XMLHttpRequest();
+        ins.open("GET", query.getQuery());
 
-reloadButton.addEventListener('click', getdailyContent);
+        ins.onreadystatechange = () => {
+            if (ins.readyState === 4 && ins.status === 200)
+                resolve(JSON.parse(ins.responseText));
+        };
+
+        ins.send();
+    });
+
+    console.log(ret);
+
+    return ret;
+}
+
+function updateDataOnScreen() {
+    const mainps = document.querySelectorAll(".main p");
+    mainps[0].innerHTML = `<em>\"${userData.content.quote}\"</em>`;
+    mainps[1].innerHTML = userData.content.author;
+    document.querySelector("body").style.backgroundImage = `url(${userData.background.url})`;
+}
+
+async function fetchContent(force=true) {
+
+    userData = await fetchChromeStorage();
+
+    const day = Math.floor(Date.now() / 86400000);
+    if (userData.lastUpdateDay === undefined || day != userData.lastUpdateDay || force) {
+
+        // GET quote
+        const quote = await getQuotation();
+        userData.content = {
+            quote: quote.contents.quotes[0].quote,
+            author: quote.contents.quotes[0].author
+        };
+
+        // GET image
+        const image = await getBackground();
+        const back = Math.floor(Math.random() * image.hits.length);
+        userData.background = {
+            url: image.hits[back].largeImageURL
+        }
+
+        userData.lastUpdateDay = day;
+
+        saveUserData();
+    }
+
+    updateDataOnScreen();
+}
+
+fetchContent(false);
+
+reloadButton.addEventListener('click', () => fetchContent());
 
 ////////////////////////////////////////////////////////////////////////////////
 //  LINKS                                                                   ///
