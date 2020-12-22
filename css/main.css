@@ -69,7 +69,6 @@ body::before {
 }
 
 .controll button p {
-  width: auto;
   position: absolute;
   top: calc(100% - 1px);
   right: 0;
@@ -82,6 +81,7 @@ body::before {
 
   font-size: .6rem;
   color: black;
+  white-space: nowrap;
 
   transform: scale(0);
 
@@ -203,6 +203,47 @@ body::before {
   text-shadow: -1px -1px 0 rgba(255, 255, 255, .5), 1px -1px 0 rgba(255, 255, 255, .5), -1px 1px 0 rgba(255, 255, 255, .5), 1px 1px 0 rgba(255, 255, 255, .5);
   font-size: medium;
   font-weight: bold;
+}
+
+.link {
+  position: absolute;
+  right: -21px;
+  top: 80px;
+
+  padding: 10px;
+  padding-right: 21px;
+
+  background-color: #e2e2e2;
+  border-radius: 21px;
+
+  transition: .3s;
+}
+
+.link-hidden {
+  right: -100%;
+}
+
+.link:hover {
+  right: 0px;
+}
+
+.link a {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+
+  font-size: 1.2rem;
+}
+
+.link a p {
+  margin-left: 10px;
+
+  color: black;
+  white-space: nowrap;
+}
+
+.link a img {
+  width: 20px;
 }
 
 /* SETTINGS */

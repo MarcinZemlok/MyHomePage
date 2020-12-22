@@ -211,54 +211,133 @@ class Links {
 const body = document.querySelector('body');
 const links = document.querySelector('.links');
 links.addEventListener('click', e => {
-    const hexes = document.querySelectorAll('.hexagon');
+    links2.toggleLinks();
+    // const hexes = document.querySelectorAll('.hexagon');
 
-    if (hexes.length > 0) {
-        hexes.forEach(h => {
-            body.removeChild(h);
-        });
-    } else {
-        const linksHTML = [
-            `<a href="https://netflix.com">
-            <img src="https://netflix.com/favicon.ico" alt="add link" height="32px">
-            <p class="link-text">Netflix</p>
-            </a>`,
-            `<a href="https://mail.google.com/mail/?tab=mm&amp;authuser=0">
-            <img src="https://mail.google.com/favicon.ico" alt="add link" width="32px">
-            <p class="link-text">Gmail</p>
-            </a>`,
-            `<a href="https://maps.google.pl/maps?hl=pl&amp;tab=ml&amp;authuser=0">
-            <img src="https://maps.google.pl/favicon.ico" alt="add link" width="32px">
-            <p class="link-text">Mapy</p>
-            </a>`,
-            `<a href="https://www.youtube.com/?hl=pl&gl=PL">
-            <img src="https://www.youtube.com/s/desktop/58aaddbe/img/favicon_32.png" alt="add link" width="32px">
-            <p class="link-text">YouTube</p>
-            </a>`,
-            `<a href="https://www.facebook.com/?ref=logo">
-            <img src="https://www.facebook.com/favicon.ico" alt="add link" width="32px">
-            <p class="link-text">YouTube</p>
-            </a>`,
-            `<a href="#">
-            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fc%2Fce%2FPlus_font_awesome.svg%2F1024px-Plus_font_awesome.svg.png&f=1&nofb=1"
-                alt="add link" width="32px">
-            </a>`
-        ];
+    // if (hexes.length > 0) {
+    //     hexes.forEach(h => {
+    //         body.removeChild(h);
+    //     });
+    // } else {
+    //     const linksHTML = [
+    //         `<a href="https://netflix.com">
+    //         <img src="https://netflix.com/favicon.ico" alt="add link" height="32px">
+    //         <p class="link-text">Netflix</p>
+    //         </a>`,
+    //         `<a href="https://mail.google.com/mail/?tab=mm&amp;authuser=0">
+    //         <img src="https://mail.google.com/favicon.ico" alt="add link" width="32px">
+    //         <p class="link-text">Gmail</p>
+    //         </a>`,
+    //         `<a href="https://maps.google.pl/maps?hl=pl&amp;tab=ml&amp;authuser=0">
+    //         <img src="https://maps.google.pl/favicon.ico" alt="add link" width="32px">
+    //         <p class="link-text">Mapy</p>
+    //         </a>`,
+    //         `<a href="https://www.youtube.com/?hl=pl&gl=PL">
+    //         <img src="https://www.youtube.com/s/desktop/58aaddbe/img/favicon_32.png" alt="add link" width="32px">
+    //         <p class="link-text">YouTube</p>
+    //         </a>`,
+    //         `<a href="https://www.facebook.com/?ref=logo">
+    //         <img src="https://www.facebook.com/favicon.ico" alt="add link" width="32px">
+    //         <p class="link-text">YouTube</p>
+    //         </a>`,
+    //         `<a href="#">
+    //         <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fc%2Fce%2FPlus_font_awesome.svg%2F1024px-Plus_font_awesome.svg.png&f=1&nofb=1"
+    //             alt="add link" width="32px">
+    //         </a>`
+    //     ];
 
-        const links = new Links(
-            e.clientX,
-            e.clientY,
-            100,
-            linksHTML.length+1,
-            3,
-            Math.PI/3
-        );
+    //     const links = new Links(
+    //         e.clientX,
+    //         e.clientY,
+    //         100,
+    //         linksHTML.length+1,
+    //         3,
+    //         Math.PI/3
+    //     );
 
-        links.childrenHTML.forEach((l, i) => {
-            if (i > 0) {
-                l.innerHTML = linksHTML[i-1];
-            }
-            body.appendChild(l);
+    //     links.childrenHTML.forEach((l, i) => {
+    //         if (i > 0) {
+    //             l.innerHTML = linksHTML[i-1];
+    //         }
+    //         body.appendChild(l);
+    //     });
+    // }
+});
+
+class Links2 {
+    links = [
+        {
+            href: "https://netflix.com",
+            img: "https://netflix.com/favicon.ico",
+            text: "Netflix"
+        },
+        {
+            href: "https://mail.google.com/mail/?tab=mm&amp;authuser=0",
+            img: "https://mail.google.com/favicon.ico",
+            text: "Gmail"
+        },
+        {
+            href: "https://www.youtube.com/?hl=pl&gl=PL",
+            img: "https://www.youtube.com/s/desktop/58aaddbe/img/favicon_32.png",
+            text: "YouTube"
+        },
+        {
+            href: "#",
+            img: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fc%2Fce%2FPlus_font_awesome.svg%2F1024px-Plus_font_awesome.svg.png&f=1&nofb=1",
+            text: ""
+        }
+    ];
+
+
+    constructor() {
+        this.links2 = document.querySelector(".links");
+        this.linkElements = [];
+
+        this.render();
+
+        this.maxWidth = this.getMaxWidth();
+
+        this.spaceFactor = 50;
+        this.setAttributes();
+
+        this.visible = false;
+    }
+
+    render() {
+        this.links.forEach(l => {
+            let div = document.createElement("div");
+            div.classList.add("link", "link-hidden");
+            div.innerHTML = `<a href="${l.href}">
+                                <img src="${l.img}" alt=" ">
+                                <p>${l.text}</p>
+                                </a>`;
+            this.links2.appendChild(div);
+            this.linkElements.push(div);
         });
     }
-});
+
+    getMaxWidth() {
+        let ret = 0;
+        this.linkElements.forEach(l => {
+            ret = (l.offsetWidth > ret) ? l.offsetWidth : ret;
+        });
+        return ret;
+    }
+
+    setAttributes(spaceFactor) {
+        this.linkElements.forEach((l, i) => {
+            l.style.top = (80 + this.spaceFactor * i) + "px";
+            l.style.width = this.maxWidth + "px";
+        });
+    }
+
+    toggleLinks() {
+        this.visible = !this.visible;
+
+        this.linkElements.forEach((l, i) => {
+            l.classList.toggle("link-hidden");
+        });
+    }
+}
+
+const links2 = new Links2();
